@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="col-sm-3 col-xs-12">
+		<h1>{{ request.user }}</h1>
+	</div>
+	<div class="col-sm-9 col-xs-12">
+		{% for obj in object_list %}
+		<div class="media">
+		  {% if obj.image %}
+		  <img class="d-flex mr-3" src="..." alt="Generic placeholder image">
+		  {% endif %}
+		  <div class="media-body">
+		  	<p>
+			    {{ obj.content }}</br>
+			    via {{ obj.user }} | {{ obj.timestamp|timesince }} ago | <a href='{{ obj.get_absolute_url }}'>View</a></br></br>
+			</p>
+			<hr/>
+			{% empty %}
+				{% if request.GET.q %}
+				<p>No tweets found containing {{ request.GET.q }}.</p>
+				{% else %}
+				<p>No tweets yet.</p>
+				{% endif %}
+			</div>
+		</div>
+			{% endfor %}
+	</div>
+</div>
+
+{% endblock content %}
+
+
