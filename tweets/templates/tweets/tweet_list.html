@@ -1,5 +1,88 @@
 {% extends "base.html" %}
 
+{% block script %}
+
+<script>
+function getParameterByName(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+$(document).ready(function(){
+	var query = getParameterByName('q');
+	var tweetList = [];
+	function attachValue(value, prepend) {
+		var tweetDateDisplay = value.date_display;
+		var tweetContent = value.content;
+		var tweetUser = value.user;
+		var formatedHtml = "<div class=\"media\"><div class=\"media-body\"><p>" + tweetContent + "</br> via " + tweetUser.username + " | " + tweetDateDisplay + " | " + "<a href='#'>View</a>" + "</p></div></div></hr>"
+		if (prepend) {
+			$("#tweet-container").prepend(formatedHtml);
+		} else {
+			$("#tweet-container").append(formatedHtml);
+		}
+	}
+	function parseTweet(tl){
+		if (tl == 0) {
+			$("#tweet-container").text("No tweets currently")
+			return
+		}
+		$.each(tl,  function(key, value){
+				var tweetKey = key;
+				attachValue(value)
+		})
+	}
+	function fetchTweets() {
+		console.log("fetching");
+		$.ajax({
+			url: "api/tweet/",
+			data: {
+				"q" : query
+			},
+			method:"GET",
+			success: function(data) {
+				tweetList = data;
+				parseTweet(tweetList);
+			},
+			error: function(data) {
+				console.log("error");
+				console.log(data);
+			}
+		})
+	}
+	fetchTweets();
+	$("#tweet-form").submit(function(event){
+		event.preventDefault();
+		var this_ = $(this)
+		console.log(event);
+		var formData = this_.serialize();
+		$.ajax({
+			url: "api/tweet/create/",
+			data: formData,
+			method:"POST",
+			success: function(data) {
+				this_.find("input[type=text], textarea").val("")
+				attachValue(data, true)
+				//fetchTweets()  // this one will not work with chrome but does work with Safari
+			},
+			error: function(data) {
+				console.log("error");
+				console.log(data);
+			}
+		})
+	})
+});
+
+</script>
+{% endblock script %}
+
 {% block content %}
 <div class="row">
 	<div class="col-sm-3 col-xs-12">
@@ -8,30 +91,14 @@
 	<div class="col-sm-9 col-xs-12">
 		{% if not request.GET.q %}
 		<div>
-			{% include "tweets/form.html" with form=create_form action_url=create_url btn_title="Tweet" %}
+			{% include "tweets/form.html" with form=create_form action_url=create_url btn_title="Tweet" form_id='tweet-form' %}
 		</div>
 		<hr/>
 		{% endif %}
-		{% for obj in object_list %}
-		<div class="media">
-		  {% if obj.image %}
-		  <img class="d-flex mr-3" src="..." alt="Generic placeholder image">
-		  {% endif %}
-		  <div class="media-body">
-		  	<p>
-			    {{ obj.content }}</br>
-			    via {{ obj.user }} | {{ obj.timestamp|timesince }} ago | <a href='{{ obj.get_absolute_url }}'>View</a></br></br>
-			</p>
-			<hr/>
-			{% empty %}
-				{% if request.GET.q %}
-				<p>No tweets found containing {{ request.GET.q }}.</p>
-				{% else %}
-				<p>No tweets yet.</p>
-				{% endif %}
-			</div>
+
+		<div id="tweet-container">
+
 		</div>
-			{% endfor %}
 	</div>
 </div>
 
