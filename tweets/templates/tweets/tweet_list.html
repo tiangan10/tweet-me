@@ -42,7 +42,7 @@ $(document).ready(function(){
 	function fetchTweets() {
 		console.log("fetching");
 		$.ajax({
-			url: "api/tweet/",
+			url: "/api/tweet/",
 			data: {
 				"q" : query
 			},
@@ -58,25 +58,49 @@ $(document).ready(function(){
 		})
 	}
 	fetchTweets();
+	var charsStart = 140;
+	var charsCur = 0;
+
+	$("#tweet-form").append("<span id='tweetCharsLeft'>140<span>")
+	$("#tweet-form textarea").keyup(function(event){
+		var tweetValue = $(this).val();
+		charsCur = charsStart - tweetValue.length;
+		$("#tweetCharsLeft").text(charsCur);
+		if (charsCur > 0) {
+			$("#tweetCharsLeft").removeClass("grey-color");
+			$("#tweetCharsLeft").removeClass("red-color");
+		} else if (charsCur == 0) {
+			$("#tweetCharsLeft").removeClass("red-color");
+			$("#tweetCharsLeft").addClass("grey-color");
+		} else {
+			$("#tweetCharsLeft").removeClass("grey-color");
+			$("#tweetCharsLeft").addClass("red-color");
+		}
+	})
 	$("#tweet-form").submit(function(event){
 		event.preventDefault();
 		var this_ = $(this)
 		console.log(event);
 		var formData = this_.serialize();
-		$.ajax({
-			url: "api/tweet/create/",
-			data: formData,
-			method:"POST",
-			success: function(data) {
-				this_.find("input[type=text], textarea").val("")
-				attachValue(data, true)
-				//fetchTweets()  // this one will not work with chrome but does work with Safari
-			},
-			error: function(data) {
-				console.log("error");
-				console.log(data);
-			}
-		})
+		if (charsCur >= 0) {
+			$.ajax({
+				url: "api/tweet/create/",
+				data: formData,
+				method:"POST",
+				success: function(data) {
+					this_.find("input[type=text], textarea").val("")
+					attachValue(data, true)
+					//fetchTweets()  // this one will not work with chrome but does work with Safari
+				},
+				error: function(data) {
+					console.log("error");
+					console.log(data);
+				}
+			})
+		} else {
+			console.log("Cannot create, tweet is too long")
+		}
+		
 	})
 });
 
