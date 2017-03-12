@@ -44,7 +44,7 @@ $(document).ready(function(){
 		console.log("fetching");
 		var fetchUrl;
 		if (!url) {
-			fetchUrl = "/api/tweet/";
+			fetchUrl = "/api/tweet/"
 		} else {
 			fetchUrl = url
 		}
@@ -72,7 +72,7 @@ $(document).ready(function(){
 	fetchTweets();
 
 	$("#loadmore").click(function(event){
-		event.preventDefault;
+		event.preventDefault();
 
 		if (nextTweetUrl) {
 			fetchTweets(nextTweetUrl)
