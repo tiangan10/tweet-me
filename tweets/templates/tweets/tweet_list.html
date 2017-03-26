@@ -23,7 +23,7 @@ $(document).ready(function(){
 		var tweetDateDisplay = value.date_display;
 		var tweetContent = value.content;
 		var tweetUser = value.user;
-		var formatedHtml = "<div class=\"media\"><div class=\"media-body\"><p>" + tweetContent + "</br> via " + tweetUser.username + " | " + tweetDateDisplay + " | " + "<a href='#'>View</a>" + "</p></div></div></hr>"
+		var formatedHtml = "<div class=\"media\"><div class=\"media-body\"><p>" + tweetContent + "</br> via " + "<a href='"  + tweetUser.url+ "'>" + tweetUser.username + "</a>" + " | " + tweetDateDisplay + " | " + "<a href='#'>View</a>" + "</p></div></div></hr>"
 		if (prepend) {
 			$("#tweet-container").prepend(formatedHtml);
 		} else {
