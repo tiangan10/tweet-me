@@ -14,8 +14,8 @@
 
 
 		<hr/>
-		<h1>Following</h1>
-			{% for user in object.profile.following.all %}
+		<h1>Following <small>{{ object.profile.get_following.count }}</small></h1>
+			{% for user in object.profile.get_following %}
 			<a href="/{{ user.username }}"> {{ user.username }} </a><br/>
 			{% empty %}
 			<h4>Not following any users</h4>
