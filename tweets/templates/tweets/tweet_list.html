@@ -19,16 +19,26 @@ $(document).ready(function(){
 	var query = getParameterByName('q');
 	var tweetList = [];
 	var nextTweetUrl;
+
+	function updateHashLinks() {
+		$(".media-body").each(function(data){
+			var hashTagRegex = /(^|\s)#([\w\d-]+)/g;
+			var newText = $(this).html().replace(hashTagRegex, "$1<a href='/tags/$2'>#$2</a>")
+			$(this).html(newText)
+		})
+	}
 	function attachValue(value, prepend) {
 		var tweetDateDisplay = value.date_display;
 		var tweetContent = value.content;
 		var tweetUser = value.user;
-		var formatedHtml = "<div class=\"media\"><div class=\"media-body\"><p>" + tweetContent + "</br> via " + "<a href='"  + tweetUser.url+ "'>" + tweetUser.username + "</a>" + " | " + tweetDateDisplay + " | " + "<a href='#'>View</a>" + "</p></div></div></hr>"
+		var isRetweet = value.is_retweet;
+		var formatedHtml = "<div class=\"media\">" + isRetweet + "<div class=\"media-body\"><p>" + tweetContent + "</br> via " + "<a href='"  + tweetUser.url+ "'>" + tweetUser.username + "</a>" + " | " + tweetDateDisplay + " | " + "<a href='/tweet/" + value.id + "'>View</a>" + "</p></div></div></hr>"
 		if (prepend) {
 			$("#tweet-container").prepend(formatedHtml);
 		} else {
 			$("#tweet-container").append(formatedHtml);
 		}
+		updateHashLinks()
 	}
 	function parseTweet(tl){
 		if (tl == 0) {

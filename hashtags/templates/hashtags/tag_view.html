@@ -1,0 +1,15 @@
+{% block content %}
+<div class="row">
+	<div class="col-sm-3 col-xs-12">
+		<h1>{{ obj.tag }}</h1>
+	</div>
+	<div class="col-sm-9 col-xs-12">
+		{% for tweet in obj.get_tweets %}
+		{{tweet.content}} <br/>
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock content %}
+
+
